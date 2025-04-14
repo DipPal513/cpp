@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+           font-family: 'Inter';
+            font-weight: 400;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f5f5f5;
+        }
+
+        .card {
+            width: 400px;
+            height: 460px;
+            border-radius: 30px;
+            overflow: hidden;
+            position: relative;
+            color: white;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            background: #1a1a1a;
+        }
+
+        .gradient-overlay {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background: linear-gradient(135deg,
+                    rgba(26, 26, 26, 1) 0%,
+                    rgba(26, 26, 26, 1) 40%,
+                    rgba(26, 26, 26, 0.9) 60%,
+                    rgba(26, 26, 26, 0.8) 70%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .gradient-pink {
+        position: absolute;
+        top: -20%;
+        right: -20%;
+        width: 80%;
+        height: 80%;
+        background: linear-gradient(135deg,
+                rgba(226, 192, 206, 0.8) 0%,
+                rgba(213, 131, 113, 0.6) 30%,
+                rgba(215, 88, 189, 0.4) 60%,
+                rgba(0, 0, 0, 0) 100%);
+        z-index: 0;
+        pointer-events: none;
+        border-radius: 50%;
+        filter: blur(20px);
+    }
+        .header,
+        .controls,
+        .total-sales,
+        .platform-list,
+        .chart-container,
+        .days {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            background-color: #3a3a3a;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 15px;
+        }
+
+        .logo-text {
+            font-size: 28px;
+            font-weight: 700;
+            font-style: italic;
+            transform: skewX(-10deg);
+        }
+
+        .title h1 {
+            font-size: 15px;
+            font-weight: 400;
+            color: #aaa;
+            margin-bottom: 0px;
+        }
+
+        .title h2 {
+            font-size: 20px;
+            font-weight: 400;
+        }
+
+        .controls {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            display: flex;
+        }
+
+        .dropdown {
+            background-color: rgba(255, 255, 255, 0.15);
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin-right: 10px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+
+        .dropdown::after {
+            content: "▼";
+            font-size: 8px;
+            margin-left: 8px;
+        }
+
+        .menu-button {
+            background-color: rgba(255, 255, 255, 0.15);
+            width: 36px;
+            height: 36px;
+            border-radius: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .total-sales {
+            font-size: 45px;
+            font-weight: 400;
+            margin: 20px 0 30px;
+            letter-spacing: -1px;
+        }
+
+        .dollar {
+            font-size: 30px;
+            vertical-align: top;
+            position: relative;
+            top: 5px;
+            color: #999;
+        }
+
+        .platform-list {
+            margin-bottom: 30px;
+        }
+
+        .platform {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .platform-name {
+            font-size: 16px;
+        }
+
+        .platform-stats {
+            text-align: right;
+            display: flex;
+            align-items: center;
+        }
+
+        .platform-amount {
+            font-size: 16px;
+            margin-right: 15px;
+            color: #aaa;
+        }
+
+        .platform-change {
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .up {
+            color: #4caf50;
+        }
+
+        .down {
+            color: #f44336;
+        }
+
+        .chart-container {
+            height: 70px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .chart {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.7;
+        }
+
+        .chart path {
+            stroke: url(#lineGradient);
+        }
+
+        .days {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 5px;
+        }
+
+        .day {
+            color: #777;
+            font-size: 12px;
+            text-align: center;
+            width: 14.28%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <div class="gradient-overlay"></div>
+        <div class="gradient-pink"></div>
+
+        <div class="header">
+            <div class="logo">
+                <span class="logo-text">S</span>
+            </div>
+            <div class="title">
+                <h1>Sales Expert</h1>
+                <h2>Total Sales</h2>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="dropdown">Last Month</div>
+            <div class="menu-button">⋯</div>
+        </div>
+
+        <div class="total-sales"><span class="dollar">$</span>16,765.34</div>
+
+        <div class="platform-list">
+            <div class="platform">
+                <div class="platform-name">Instagram</div>
+                <div class="platform-stats">
+                    <div class="platform-amount">$10,065.23</div>
+                    <div class="platform-change up">
+                        ↑ 87.2%
+                    </div>
+                </div>
+            </div>
+
+            <div class="platform">
+                <div class="platform-name">Shopify</div>
+                <div class="platform-stats">
+                    <div class="platform-amount">$5,721.63</div>
+                    <div class="platform-change down">
+                        ↓ 21.7%
+                    </div>
+                </div>
+            </div>
+
+            <div class="platform">
+                <div class="platform-name">Facebook</div>
+                <div class="platform-stats">
+                    <div class="platform-amount">$1,268.18</div>
+                    <div class="platform-change down">
+                        ↓ 1.9%
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <svg class="chart" viewBox="0 0 300 100" preserveAspectRatio="none">
+                <defs>
+                    <linearGradient id="lineGradient" x1="100%" y1="0%" x2="0%" y2="0%">
+                        <stop offset="0%" style="stop-color:white;stop-opacity:0.3" />
+                        <stop offset="70%" style="stop-color:white;stop-opacity:0.8" />
+                        <stop offset="100%" style="stop-color:white;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <path d="M0,80 L50,70 L100,75 L150,65 L200,85 L250,70 L300,40" stroke-width="2" fill="none" />
+            </svg>
+        </div>
+
+        <div class="days">
+            <div class="day">SAT</div>
+            <div class="day">SUN</div>
+            <div class="day">MON</div>
+            <div class="day">TUE</div>
+            <div class="day">WED</div>
+            <div class="day">THU</div>
+            <div class="day">FRI</div>
+        </div>
+    </div>
+</body>
+</html>
